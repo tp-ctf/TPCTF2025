@@ -1,0 +1,9 @@
+target/
+META-INF/
+dist/
+*.class
+*.jar
+*.crt
+*.tar.gz
+keystore.jks
+password

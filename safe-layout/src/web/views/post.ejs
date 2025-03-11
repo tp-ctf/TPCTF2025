@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title><%= id.substring(0, 7) %> - Safe Layout</title>
+  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@2/css/pico.min.css" crossorigin="anonymous">
+</head>
+
+<body>
+  <main class="container">
+    <nav>
+      <a href="/">Home</a>
+    </nav>
+    <div>
+      <%- body %>
+    </div>
+  </main>
+</body>
+
+</html>

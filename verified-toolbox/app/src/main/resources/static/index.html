@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Verified Toolbox</title>
+  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@2/css/pico.min.css" crossorigin="anonymous">
+</head>
+
+<body>
+  <main class="container">
+    <h1>Verified Toolbox</h1>
+    <section>
+      <h2>Download Toolbox</h2>
+      <ul>
+        <li>
+          <a href="/toolbox/greeting.jar">greeting.jar</a>
+          <ul>
+            <li>hello.jar</li>
+            <li>nihao.jar</li>
+            <li>konnichiwa.jar</li>
+          </ul>
+        </li>
+        <li>
+          <a href="/toolbox/arithmetic.jar">arithmetic.jar</a>
+          <ul>
+            <li>add.jar</li>
+            <li>subtract.jar</li>
+            <li>multiply.jar</li>
+            <li>divide.jar</li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+    <section>
+      <h2>Run Toolbox</h2>
+      <form method="POST" action="/run" enctype="multipart/form-data">
+        <label for="file">Toolbox File</label>
+        <input type="file" id="file" name="file" accept="application/java-archive" required>
+        <label for="path">Inner JAR Path</label>
+        <input type="text" id="path" name="path" pattern="[a-zA-Z]+\.jar" title="/[a-zA-Z]+\.jar/, e.g. foo.jar" required>
+        <label for="input">Input</label>
+        <input type="text" id="input" name="input" maxlength="100">
+        <input type="submit" value="Run">
+      </form>
+    </section>
+  </main>
+</body>
+
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Encrypted Chat Solver</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <label>Input: <input v-model="input"></label>
+    <div style="font-family: monospace; font-size: 1rem; white-space: pre;">
+      <div v-for="(plaintext, i) of plaintexts" :key="i" style="margin-top: 1rem; display: flex; gap: 1px;">
+        <div v-for="(c, p) in plaintext" :key="p" @click="changeKey(i, p, c)" style="padding: 1px; cursor: pointer;">
+          <span v-if="isAsciiPrintable(c)">{{ c }}</span>
+          <span v-else style="color: red;">?</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const {createApp, ref, computed, watch} = Vue;
+
+    createApp({
+      setup() {
+        const input = ref('');
+
+        const bases = computed(() => {
+          try {
+            return JSON.parse(input.value).map((b64) => Array.from(atob(b64)));
+          } catch {
+            return [];
+          }
+        });
+
+        const key = ref([]);
+        watch(bases, (stream) => {
+          key.value = new Array(bases[0]?.length).fill(0);
+        });
+
+        const plaintexts = computed(() =>
+          bases.value.map((base) => {
+            return base.map((c, i) => String.fromCharCode(c.charCodeAt(0) ^ key.value[i]));
+          })
+        );
+
+        function isAsciiPrintable(c) {
+          return c.charCodeAt(0) >= 32 && c.charCodeAt(0) <= 126;
+        }
+
+        function changeKey(i, p, oldChar) {
+          const newChar = prompt(`Change '${oldChar}' to:`, oldChar)?.[0];
+          if (!newChar) return;
+          key.value[p] ^= plaintexts.value[i][p].charCodeAt(0) ^ newChar.charCodeAt(0);
+        }
+
+        return {
+          input,
+          plaintexts,
+          isAsciiPrintable,
+          changeKey,
+        }
+      },
+    }).mount('#app');
+  </script>
+</body>
+
+</html>

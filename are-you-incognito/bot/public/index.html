@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@2/css/pico.min.css" crossorigin="anonymous">
+  <title>Admin Bot - Are you incognito?</title>
+</head>
+
+<body>
+  <main class="container">
+    <h1>Admin Bot - Are you incognito?</h1>
+    <label for="url">URL</label>
+    <input type="text" id="url" placeholder="https://example.com" required />
+    <button id="report" aria-busy="false">Report</button>
+  </main>
+  <script>
+    const urlInput = document.getElementById('url');
+    const report = document.getElementById('report');
+
+    let loading = false;
+    report.addEventListener('click', async () => {
+      if (loading) return;
+
+      const url = urlInput.value.trim();
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        alert('Invalid URL');
+        return;
+      }
+
+      loading = true;
+      report.toggleAttribute('disabled', true);
+      report.setAttribute('aria-busy', 'true');
+
+      try {
+        const res = await fetch('/api/report', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ url }),
+        });
+        if (res.status === 200) {
+          alert('Completed!');
+        } else {
+          const text = await res.text();
+          throw new Error(`HTTP ${res.status}: ${text}`);
+        }
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
+
+      loading = false;
+      report.toggleAttribute('disabled', false);
+      report.setAttribute('aria-busy', 'false');
+    });
+  </script>
+</body>
+
+</html>

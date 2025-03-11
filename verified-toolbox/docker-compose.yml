@@ -1,0 +1,8 @@
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    labels:
+      '8080': http://IP:PORT
+    ports:
+      - 8080:8080

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@2/css/pico.min.css" crossorigin="anonymous">
+  <title>Admin Bot - Safe Layout</title>
+</head>
+
+<body>
+  <main class="container">
+    <h1>Admin Bot - Safe Layout</h1>
+    <label for="post">Post ID</label>
+    <input type="text" id="post" placeholder="c62603f073853407ed783e570e8d9399" required />
+    <button id="report" aria-busy="false">Report</button>
+  </main>
+  <script>
+    const post = document.getElementById('post');
+    const report = document.getElementById('report');
+
+    let loading = false;
+    report.addEventListener('click', async () => {
+      if (loading) return;
+
+      const postId = post.value.trim();
+      if (!/^[a-f0-9]{32}$/.test(postId)) {
+        alert('Invalid post ID');
+        return;
+      }
+
+      loading = true;
+      report.toggleAttribute('disabled', true);
+      report.setAttribute('aria-busy', 'true');
+
+      try {
+        const res = await fetch('/api/report', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ postId }),
+        });
+        if (res.status === 200) {
+          alert('Completed!');
+        } else {
+          const text = await res.text();
+          throw new Error(`HTTP ${res.status}: ${text}`);
+        }
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
+
+      loading = false;
+      report.toggleAttribute('disabled', false);
+      report.setAttribute('aria-busy', 'false');
+    });
+  </script>
+</body>
+
+</html>

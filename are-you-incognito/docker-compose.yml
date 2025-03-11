@@ -1,0 +1,7 @@
+services:
+  bot:
+    build: .
+    restart: unless-stopped
+    init: true
+    ports:
+      - 1337:1337

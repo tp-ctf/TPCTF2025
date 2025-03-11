@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Safe Layout</title>
+  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@2/css/pico.min.css" crossorigin="anonymous">
+</head>
+
+<body>
+  <main class="container">
+    <h1>Safe Layout</h1>
+
+    <section>
+      <h2>Create New Post</h2>
+      <label for="content">Content</label>
+      <textarea id="content" placeholder="<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>"></textarea>
+      <label for="layoutId">Layout ID</label>
+      <input id="layoutId" type="number" value="<%= maxLayout %>" min="0" max="<%= maxLayout %>"></input>
+      <button onclick="createPost()">Create Post</button>
+    </section>
+
+    <section>
+      <h2>Create New Layout</h2>
+      <label for="layout">Layout HTML (use <code>{{content}}</code> as placeholder)</label>
+      <textarea id="layout" placeholder="<div>{{content}}</div>"></textarea>
+      <button onclick="createLayout()">Create Layout</button>
+    </section>
+
+    <section>
+      <h2>Your Posts</h2>
+      <% if (posts.length === 0) { %>
+        <p>(empty)</p>
+      <% } else { %>
+        <ul>
+          <% for (const id of posts) { %>
+            <li>
+              <a href="/post/<%= id %>"><%= id %></a>
+            </li>
+          <% } %>
+        </ul>
+      <% } %>
+    </section>
+
+    <button onclick="clearAll()">Clear All</button>
+
+    <script>
+      async function createPost() {
+        const content = document.getElementById('content').value;
+        const layoutId = Number(document.getElementById('layoutId').value);
+
+        try {
+          const response = await fetch('/api/post', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ content, layoutId }),
+          });
+
+          if (!response.ok) {
+            throw new Error(await response.text());
+          }
+
+          const data = await response.json();
+          window.location.href = `/post/${data.id}`;
+        } catch (error) {
+          alert(`Failed to create post: ${error.message}`);
+        }
+      }
+
+      async function createLayout() {
+        const layout = document.getElementById('layout').value;
+
+        try {
+          const response = await fetch('/api/layout', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ layout }),
+          });
+
+          if (!response.ok) {
+            throw new Error(await response.text());
+          }
+
+          const data = await response.json();
+          alert(`Created layout: ${data.id}`);
+          location.reload();
+        } catch (error) {
+          alert(`Failed to create layout: ${error.message}`);
+        }
+      }
+
+      async function clearAll() {
+        try {
+          const response = await fetch('/api/clear', { method: 'POST' });
+          if (!response.ok) {
+            throw new Error(await response.text());
+          }
+          alert('Cleared all posts and layouts');
+          location.reload();
+        } catch (error) {
+          alert(`Failed to clear: ${error.message}`);
+        }
+      }
+    </script>
+  </main>
+</body>
+
+</html>

