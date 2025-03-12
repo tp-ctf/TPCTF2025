@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IPVM</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">🚀 IPVM 🚀</span>
+      </div>
+    </nav>
+
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              id="cid-input"
+              class="form-control"
+              placeholder="CID"
+              aria-label="CID"
+            />
+          </div>
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              id="arg-input"
+              class="form-control"
+              placeholder="Arguments"
+              aria-label="Arguments"
+            />
+          </div>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button
+              id="build-btn"
+              class="btn btn-primary me-md-2"
+              type="button"
+            >
+              🔧 Build
+            </button>
+            <button id="run-btn" class="btn btn-success" type="button">
+              🚀 Run
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const buildBtn = document.getElementById("build-btn");
+      const runBtn = document.getElementById("run-btn");
+      const cidInput = document.getElementById("cid-input");
+      const argInput = document.getElementById("arg-input");
+
+      buildBtn.addEventListener("click", async () => {
+        const cid = cidInput.value.trim();
+        if (!cid) {
+          alert("Please input CID");
+          return;
+        }
+
+        try {
+          const response = await fetch("/build", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ cid }),
+          });
+
+          if (!response.ok) {
+            throw new Error(await response.text());
+          }
+
+          const data = await response.json();
+          alert(`Build result: ${data.output}`);
+        } catch (error) {
+          alert("Build failed: " + error.message);
+        }
+      });
+
+      runBtn.addEventListener("click", async () => {
+        const cid = cidInput.value.trim();
+        const arg = argInput.value.trim();
+        if (!cid || !arg) {
+          alert("Please input CID and arguments");
+          return;
+        }
+
+        try {
+          const response = await fetch("/build", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ cid, arg }),
+          });
+
+          if (!response.ok) {
+            throw new Error(await response.text());
+          }
+
+          const data = await response.json();
+          alert(`Output: ${data.output}`);
+        } catch (error) {
+          alert("Failure: " + error.message);
+        }
+      });
+    </script>
+  </body>
+</html>

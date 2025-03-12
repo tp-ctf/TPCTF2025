@@ -1,0 +1,18 @@
+services:
+  ipfs:
+    container_name: ipfs
+    image: ipfs/kubo:release
+    healthcheck:
+      test: sh -c "[ -f /data/ipfs/api ]"
+      interval: 1s
+      start_period: 5s
+
+  server:
+    container_name: server
+    image: ipvm
+    depends_on:
+      ipfs:
+        condition: service_healthy
+
+    ports:
+      - "8000:8000"
