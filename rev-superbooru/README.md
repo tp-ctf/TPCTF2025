@@ -40,7 +40,7 @@ This means that the same rule can be applied at most once, and even if it is app
 
 But how EXACTLY are these rules divided into layers? As the hint released in the second half of the competition says, starting from the initial `check_flag` tag, there will be a chain of tags like `check_flag -> -check_flag, new_flag1`, `new_flag1 -> -new_flag1, new_flag2`, and so on. For the nth layer of rules, we add the condition of `new_flag{n}` to achieve this layered structure.
 
-Given this information, we can write a script to simplify the rules and remove the unnecessary tags used for obfuscation. (Check <exp/sol.py>).
+Given this information, we can write a script to simplify the rules and remove the unnecessary tags used for obfuscation. (Check [sol.py](exp/sol.py)).
 
 Then we extract the tag chain starting from `check_flag` (denoted as PC chain). After that, we can attach the layer information to the consequences. For example, for the following rules:
 
@@ -66,6 +66,6 @@ a2 = b1, b2 = b1, c2 = c1
 a3 = a2, b3 = c2, c3 = c2
 ```
 
-So basically we can convert the problem into SMT then. To avoid the model from being way too complex, we only preserve the tags that have changed in each round (e.g., `a1, b1, b2, c2, a3, c3` in the example above will be discarded). Finally, we can directly use z3 to solve it. On this basis, we can also use z3 to verify that the solution is unique. See <exp/sol2.py>.
+So basically we can convert the problem into SMT then. To avoid the model from being way too complex, we only preserve the tags that have changed in each round (e.g., `a1, b1, b2, c2, a3, c3` in the example above will be discarded). Finally, we can directly use z3 to solve it. On this basis, we can also use z3 to verify that the solution is unique. See [sol2.py](exp/sol2.py).
 
-> P.S. For generation of `implications.txt`, see <problem/gen.py> and <problem/obfuscate.py>.
+> P.S. For generation of `implications.txt`, see [gen.py](problem/gen.py) and [obfuscate.py](problem/obfuscate.py).
