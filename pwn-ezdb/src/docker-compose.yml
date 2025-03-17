@@ -1,0 +1,8 @@
+services:
+  docker_game:
+    image: docker_game:1.0
+    labels:
+ '9999': nc IP PORT
+    ports:- '9999'
+ restart: unless-stopped
+ version: 2
