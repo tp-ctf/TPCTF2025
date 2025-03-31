@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous Message Board</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        h2 {
+            color: #444;
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .message {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .message:last-child {
+            border-bottom: none;
+        }
+        .username {
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .username-info {
+            font-size: 0.85em;
+            color: #888;
+        }
+        .message-content {
+            white-space: pre-wrap;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 10px 0;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .success {
+            color: green;
+            display: none;
+            margin-top: 10px;
+        }
+        .error {
+            color: red;
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Anonymous Message Board</h1>
+    
+    <div class="container">
+        <!-- Message display area -->
+        <div class="section">
+            <h2>Latest Messages (Temporarily Closed)</h2>
+            {% for message in messages %}
+            <div class="message">
+                <div class="username">User: {{ message.ip }}</div>
+                <div class="message-content">{{ message.content }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Message submission area -->
+        <div class="section">
+            <h2>Post a Message</h2>
+            <div class="username">User: {{ user_ip }}</div>
+            <form id="messageForm">
+                <textarea id="content" placeholder="Enter your message here..." required maxlength="1000"></textarea>
+                <button type="submit">Submit</button>
+                <div id="successMsg" class="success">Submission successful!</div>
+                <div id="errorMsg" class="error">Error submitting message. Please try again.</div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('messageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const content = document.getElementById('content').value;
+            
+            // Basic validation
+            if (!content || content.trim() === '') {
+                document.getElementById('errorMsg').textContent = 'Message cannot be empty';
+                document.getElementById('errorMsg').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('errorMsg').style.display = 'none';
+                }, 3000);
+                return;
+            }
+            
+            // Send message to backend API
+            fetch('/api/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'content=' + encodeURIComponent(content)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    // Show success message
+                    document.getElementById('successMsg').style.display = 'block';
+                    
+                    // Clear message box
+                    document.getElementById('content').value = '';
+                    
+                    // Hide success message after 3 seconds
+                    setTimeout(() => {
+                        document.getElementById('successMsg').style.display = 'none';
+                    }, 3000);
+                } else {
+                    throw new Error(data.message || 'Unknown error');
+                }
+            })
+            .catch(error => {
+                // Show error message
+                document.getElementById('errorMsg').textContent = 'Error: ' + error.message;
+                document.getElementById('errorMsg').style.display = 'block';
+                
+                // Hide error message after 3 seconds
+                setTimeout(() => {
+                    document.getElementById('errorMsg').style.display = 'none';
+                }, 3000);
+                
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
