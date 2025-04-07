@@ -1,0 +1,8 @@
+FROM python:3.7.11-buster
+RUN apt-get update && apt-get install -y libexiv2-dev libboost-python-dev exiftool
+RUN git clone --depth 1 https://gerrit.wikimedia.org/r/operations/software/thumbor-plugins
+RUN pip install -r thumbor-plugins/requirements.txt
+RUN dd if=thumbor-plugins/README.md of=thumbor.conf bs=1 count=1947 skip=610
+RUN echo TPCTF{ev1l_PNG_mag1ck_Lfi} > /flag
+ENV PYTHONPATH=/thumbor-plugins
+ENTRYPOINT thumbor --port 8800 --conf=thumbor.conf -a wikimedia_thumbor.app.App
